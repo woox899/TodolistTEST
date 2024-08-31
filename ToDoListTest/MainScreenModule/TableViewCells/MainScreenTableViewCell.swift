@@ -16,25 +16,25 @@ final class MainScreenTableViewCell: UITableViewCell {
     
     var segmentControlArray = [UIImage(systemName: "checkmark"), UIImage(systemName: "xmark")]
     
+    var completedValueChanged: ((Bool) -> Void)?
+    
     private let backgroundViewForCell: UIView = {
         let backgroundViewForCell = UIView()
-        backgroundViewForCell.layer.cornerRadius = 24
+        backgroundViewForCell.layer.cornerRadius = 12
         return backgroundViewForCell
     }()
 
-    private var taskName: UILabel = {
+    private var taskNameLabel: UILabel = {
         let taskName = UILabel()
-        taskName.text = "TaskName"
         taskName.numberOfLines = 3
         taskName.font = .boldSystemFont(ofSize: 16)
         taskName.adjustsFontSizeToFitWidth = true
         return taskName
     }()
     
-    private let taskDescription: UILabel = {
+    private let taskDescriptionLabel: UILabel = {
         let taskDescription = UILabel()
-        taskDescription.text = "AAAAAAAAAAA"
-        taskDescription.font = .monospacedSystemFont(ofSize: 14, weight: .light)
+        taskDescription.font = .systemFont(ofSize: 14)
         return taskDescription
     }()
     
@@ -77,7 +77,8 @@ final class MainScreenTableViewCell: UITableViewCell {
     
     func configure(tasks: Todo) {
         self.tasks = tasks
-        taskName.text = tasks.todo
+        taskNameLabel.text = tasks.todo
+        taskDescriptionLabel.text = tasks.description ?? "empty text"
         
         if tasks.completed == true {
             statusSegmentControl.selectedSegmentIndex = 0
@@ -90,16 +91,18 @@ final class MainScreenTableViewCell: UITableViewCell {
     
    @objc func chengeCellColor() {
         if statusSegmentControl.selectedSegmentIndex == 0 {
-            backgroundViewForCell.backgroundColor = UIColor(red: 147/255, green: 244/255, blue: 146/255, alpha: 1)
+//            backgroundViewForCell.backgroundColor = UIColor(red: 147/255, green: 244/255, blue: 146/255, alpha: 1)
+            completedValueChanged?(true)
         } else if statusSegmentControl.selectedSegmentIndex == 1 {
-            backgroundViewForCell.backgroundColor = UIColor(red: 242/255, green: 95/255, blue: 101/255, alpha: 1)
+//            backgroundViewForCell.backgroundColor = UIColor(red: 242/255, green: 95/255, blue: 101/255, alpha: 1)
+            completedValueChanged?(false)
         }
     }
     
     private func setupUI() {
         contentView.addSubview(backgroundViewForCell)
-        backgroundViewForCell.addSubview(taskName)
-        backgroundViewForCell.addSubview(taskDescription)
+        backgroundViewForCell.addSubview(taskNameLabel)
+        backgroundViewForCell.addSubview(taskDescriptionLabel)
         backgroundViewForCell.addSubview(dividingLine)
         backgroundViewForCell.addSubview(dateOfCreation)
         backgroundViewForCell.addSubview(dateOfCreationLabel)
@@ -112,22 +115,22 @@ final class MainScreenTableViewCell: UITableViewCell {
             make.bottom.equalTo(contentView.snp.bottom).offset(-10)
         }
 
-        taskName.snp.makeConstraints { make in
+        taskNameLabel.snp.makeConstraints { make in
             make.leading.equalTo(backgroundViewForCell.snp.leading).offset(10)
             make.top.equalTo(backgroundViewForCell.snp.top).offset(10)
             make.trailing.equalTo(statusSegmentControl.snp.leading).offset(-10)
-            make.bottom.equalTo(taskDescription.snp.top).offset(-10)
+            make.bottom.equalTo(taskDescriptionLabel.snp.top).offset(-10)
         }
         
-        taskDescription.snp.makeConstraints { make in
+        taskDescriptionLabel.snp.makeConstraints { make in
             make.leading.equalTo(backgroundViewForCell).offset(10)
-            make.top.equalTo(taskName.snp.bottom).offset(15)
+            make.top.equalTo(taskNameLabel.snp.bottom).offset(15)
             make.trailing.equalTo(statusSegmentControl.snp.leading).offset(-10)
             make.bottom.equalToSuperview().offset(-10)
         }
         
         dividingLine.snp.makeConstraints { make in
-            make.leading.equalTo(taskName.snp.trailing).offset(5)
+            make.leading.equalTo(taskNameLabel.snp.trailing).offset(5)
             make.centerY.equalTo(backgroundViewForCell.snp.centerY)
             make.top.equalTo(backgroundViewForCell.snp.top).offset(10)
             make.bottom.equalTo(backgroundViewForCell.snp.bottom).offset(-10)
@@ -137,7 +140,7 @@ final class MainScreenTableViewCell: UITableViewCell {
         statusSegmentControl.snp.makeConstraints { make in
             make.trailing.equalTo(backgroundViewForCell).offset(-10)
             make.top.equalTo(backgroundViewForCell).offset(10)
-            make.leading.equalTo(taskName.snp.trailing).offset(10)
+            make.leading.equalTo(taskNameLabel.snp.trailing).offset(10)
             make.bottom.equalTo(dateOfCreationLabel.snp.top).offset(-5)
             make.width.equalTo(120)
         }
@@ -145,7 +148,7 @@ final class MainScreenTableViewCell: UITableViewCell {
         dateOfCreation.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-10)
             make.top.equalTo(dateOfCreationLabel.snp.bottom)
-            make.leading.equalTo(taskName.snp.trailing).offset(10)
+            make.leading.equalTo(taskNameLabel.snp.trailing).offset(10)
             make.bottom.equalToSuperview().offset(-10)
             make.width.equalTo(120)
         }
@@ -154,7 +157,7 @@ final class MainScreenTableViewCell: UITableViewCell {
             make.top.equalTo(statusSegmentControl.snp.bottom).offset(5)
             make.bottom.equalTo(dateOfCreation.snp.top)
             make.trailing.equalToSuperview().offset(-10)
-            make.leading.equalTo(taskName.snp.trailing).offset(10)
+            make.leading.equalTo(taskNameLabel.snp.trailing).offset(10)
         }
     }
 }

@@ -12,9 +12,11 @@ protocol ToDoDetailsScreenPresenterProtocol: AnyObject {
     func presentTaskDetails(task: Todo)
 
     func viewDidLoaded() // от ViweController
+    func saveNewTaskChanges(task: Todo)
 }
 
 class ToDoDetailsScreenPresenter: ToDoDetailsScreenPresenterProtocol {
+    
     weak var viewController: ToDoDetailsScreenViewControllerProtocol?
     var interactor: ToDoDetailsScreenInteractorProtocol
     var router: ToDoDetailsScreenRouterProtocol
@@ -35,5 +37,9 @@ class ToDoDetailsScreenPresenter: ToDoDetailsScreenPresenterProtocol {
 
     func viewDidLoaded() {
         interactor.viewDidLoaded()
+    }
+    
+    func saveNewTaskChanges(task: Todo) {
+        router.saveTaskChanges(task: task)
     }
 }

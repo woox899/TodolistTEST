@@ -8,15 +8,14 @@
 import UIKit
 
 protocol MainScreenViewControllerProtocol: AnyObject {
-    func displayFilledTasks(tasks: MainScreenEntity.MainScreenTodoList)
-    func displayNewAddedTask(model: MainScreenEntity.MainScreenNewTask)
+    func displayFilledTasks(tasks: MainScreenEntity.MainScreenTodoList) // показать заполненные таски
 }
 
 final class MainScreenViewController: UIViewController, MainScreenViewControllerProtocol {
 
-    var presenter: MainScreenPresenterProtocol?
+    var presenter: MainScreenPresenterProtocol? // ссылка на презентер
     
-    var tasksArray = TodoListModel(todos: [])
+    var tasksArray = TodoListModel(todos: []) // датасорс таблицы
 
     private lazy var mainTableView: UITableView = {
         let mainTableView = UITableView(frame: view.bounds, style: .plain)
@@ -31,17 +30,12 @@ final class MainScreenViewController: UIViewController, MainScreenViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        presenter?.viewDidLoaded()
+        presenter?.viewDidLoaded() // контроллер сообщает презентеру что он загрузился
     }
 
-    func displayFilledTasks(tasks: MainScreenEntity.MainScreenTodoList) {
-        tasksArray = tasks.list
-        mainTableView.reloadData()
-    }
-
-    func displayNewAddedTask(model: MainScreenEntity.MainScreenNewTask) {
-        tasksArray.todos.append(model.task)
-        mainTableView.reloadData()
+    func displayFilledTasks(tasks: MainScreenEntity.MainScreenTodoList) { // метод где запоняется массив
+        tasksArray = tasks.list // заполнение массива
+        mainTableView.reloadData() // обновление таблицы
     }
     
     private func setupUI() {
@@ -54,7 +48,7 @@ final class MainScreenViewController: UIViewController, MainScreenViewController
     }
 
     @objc func addNewTask() {
-        presenter?.didTapCreateNewTaskButton()
+        presenter?.didTapCreateNewTaskButton() 
     }
 }
 
@@ -66,6 +60,11 @@ extension MainScreenViewController: UITableViewDataSource {
         }
         toDoTableViewCell.configure(tasks: tasksArray.todos[indexPath.row])
         toDoTableViewCell.selectionStyle = .none
+        toDoTableViewCell.completedValueChanged = { [weak self] isCompleted in
+            guard let self else { return }
+            self.tasksArray.todos[indexPath.row].completed = isCompleted
+            self.presenter?.taskCompletedValueChanged(task: self.tasksArray.todos[indexPath.row])
+        }
         toDoTableViewCell.backgroundColor = UIColor(red: 43/255, green: 50/255, blue: 54/255, alpha: 1)
         return toDoTableViewCell
     }

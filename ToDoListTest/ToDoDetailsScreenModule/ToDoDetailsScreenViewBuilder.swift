@@ -7,12 +7,9 @@
 
 import UIKit
 
-enum ToDoDetailsScreenViewBuilderRoutes {
-    case createTask(Todo)
-}
-
 class ToDoDetailsScreenViewBuilder {
-    static func build(task: Todo?, routes: ((ToDoDetailsScreenViewBuilderRoutes) -> Void)?) -> ToDoDetailsViewController {
+    weak var router: ToDoDetailsScreenRouter?
+    func build(task: Todo?) -> ToDoDetailsViewController {
         let viewController = ToDoDetailsViewController()
         let interactor = ToDoDetailsScreenInteractor(task: task)
         let router = ToDoDetailsScreenRouter()
@@ -22,7 +19,7 @@ class ToDoDetailsScreenViewBuilder {
         presenter.viewController = viewController
         interactor.presenter = presenter
         router.viewController = viewController
-      
+        self.router = router
         return viewController
     }
 }

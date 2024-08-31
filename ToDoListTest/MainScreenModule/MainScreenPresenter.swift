@@ -13,6 +13,7 @@ protocol MainScreenPresenterProtocol: AnyObject {
     func viewDidLoaded()
     func didTapRow(task: Todo)
     func didTapCreateNewTaskButton()
+    func taskCompletedValueChanged(task: Todo)
 }
 
 class MainScreenPresenter: MainScreenPresenterProtocol {
@@ -30,16 +31,21 @@ class MainScreenPresenter: MainScreenPresenterProtocol {
     }
     
     func didTapRow(task: Todo) {
-        router.openDetailsScreen(task: task)
+        router.openDetailsScreen(task: task) { [weak self] task in
+            self?.interactor.updateEditedTask(task: task)
+        }
     }
 
     func didTapCreateNewTaskButton() {
         router.openCreateNewTaskScreen() { [weak self] task in
-            let entity = MainScreenEntity.MainScreenNewTask(task: task)
-            self?.viewController?.displayNewAddedTask(model: entity)
+            self?.interactor.validateTaskID(task: task)
         }
     }
     
+    func taskCompletedValueChanged(task: Todo) {
+        self.interactor.updateTaskCompletion(task: task)
+    }
+
     init(interactor: MainScreenInteractorProtocol, router: MainScreenRouterProtocol) {
         self.interactor = interactor
         self.router = router
