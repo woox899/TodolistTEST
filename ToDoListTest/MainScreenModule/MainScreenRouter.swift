@@ -9,7 +9,7 @@ import UIKit
 
 protocol MainScreenRouterProtocol: AnyObject {
     func openDetailsScreen(task: Todo, completion: ((Todo) -> Void)?)
-    func openCreateNewTaskScreen(completion: ((Todo) -> Void)?)
+    func openCreateNewTaskScreen(completion: ((TodoRequest) -> Void)?)
 }
 
 final class MainScreenRouter: MainScreenRouterProtocol {
@@ -23,17 +23,21 @@ final class MainScreenRouter: MainScreenRouterProtocol {
             case .saveTaskChanges(let task):
                 completion?(task)
                 self?.viewController?.dismiss(animated: true)
+            case .addTask(_):
+                return
             }
         }
         viewController?.present(detailsVC, animated: true)
     }
 
-    func openCreateNewTaskScreen(completion: ((Todo) -> Void)?) {
+    func openCreateNewTaskScreen(completion: ((TodoRequest) -> Void)?) {
         let builder = ToDoDetailsScreenViewBuilder()
         let detailsVC = builder.build(task: nil)
         builder.router?.routes = { [weak self] routes in
             switch routes {
-            case .saveTaskChanges(let task):
+            case .saveTaskChanges:
+                return
+            case .addTask(let task):
                 completion?(task)
                 self?.viewController?.dismiss(animated: true)
             }

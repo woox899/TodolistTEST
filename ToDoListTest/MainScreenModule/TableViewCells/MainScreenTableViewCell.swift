@@ -47,7 +47,7 @@ final class MainScreenTableViewCell: UITableViewCell {
     private let dateOfCreationLabel: UILabel = {
         let dateOfCreationLabel = UILabel()
         dateOfCreationLabel.text = "Date of creation"
-        dateOfCreationLabel.font = .systemFont(ofSize: 12)
+        dateOfCreationLabel.font = .systemFont(ofSize: 14)
         dateOfCreationLabel.textAlignment = .center
         return dateOfCreationLabel
     }()
@@ -78,7 +78,7 @@ final class MainScreenTableViewCell: UITableViewCell {
     func configure(tasks: Todo) {
         self.tasks = tasks
         taskNameLabel.text = tasks.todo
-        taskDescriptionLabel.text = tasks.description ?? "empty text"
+        taskDescriptionLabel.text = "empty text"
         
         if tasks.completed == true {
             statusSegmentControl.selectedSegmentIndex = 0
@@ -91,10 +91,8 @@ final class MainScreenTableViewCell: UITableViewCell {
     
    @objc func chengeCellColor() {
         if statusSegmentControl.selectedSegmentIndex == 0 {
-//            backgroundViewForCell.backgroundColor = UIColor(red: 147/255, green: 244/255, blue: 146/255, alpha: 1)
             completedValueChanged?(true)
         } else if statusSegmentControl.selectedSegmentIndex == 1 {
-//            backgroundViewForCell.backgroundColor = UIColor(red: 242/255, green: 95/255, blue: 101/255, alpha: 1)
             completedValueChanged?(false)
         }
     }
@@ -127,6 +125,7 @@ final class MainScreenTableViewCell: UITableViewCell {
             make.top.equalTo(taskNameLabel.snp.bottom).offset(15)
             make.trailing.equalTo(statusSegmentControl.snp.leading).offset(-10)
             make.bottom.equalToSuperview().offset(-10)
+            make.height.equalTo(30)
         }
         
         dividingLine.snp.makeConstraints { make in
@@ -158,6 +157,7 @@ final class MainScreenTableViewCell: UITableViewCell {
             make.bottom.equalTo(dateOfCreation.snp.top)
             make.trailing.equalToSuperview().offset(-10)
             make.leading.equalTo(taskNameLabel.snp.trailing).offset(10)
+            make.height.equalTo(20)
         }
     }
 }

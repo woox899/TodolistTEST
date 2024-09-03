@@ -9,9 +9,10 @@ import UIKit
 
 protocol MainScreenInteractorProtocol: AnyObject {
     func loadTasks()
-    func validateTaskID(task: Todo)
+    func addNewTask(task: TodoRequest)
     func updateEditedTask(task: Todo)
     func updateTaskCompletion(task: Todo)
+    func deleteTask()
 }
 
 final class MainScreenInteractor: MainScreenInteractorProtocol {
@@ -20,16 +21,17 @@ final class MainScreenInteractor: MainScreenInteractorProtocol {
 
     weak var presenter: MainScreenPresenterProtocol?
     
+    let networkManager = NetworkManager()
+
     func loadTasks() {
-        let networkManager = NetworkManager()
-        networkManager.getTasks() { [weak self] tasks in
+        networkManager.getTasks() { [weak self] result in
             guard let self else {
                 return
             }
-            switch tasks {
+            switch result {
             case .success(let tasks):
-                self.tasks = tasks
-                self.presenter?.presentFilledTasks(tasks: tasks)
+                    self.tasks = tasks
+                    self.presenter?.presentFilledTasks(tasks: tasks)
                 // здесь обновлять базу
             case .failure(let error):
                 self.presenter?.presentFilledTasks(tasks: self.tasks)
@@ -38,16 +40,44 @@ final class MainScreenInteractor: MainScreenInteractorProtocol {
         }
     }
     
-    func validateTaskID(task: Todo) {
-        var currentTask = task
-        if tasks.todos.contains(where: { currentTask.id == $0.id }) {
-            currentTask.id = Int.random(in: 0...100000)
-            validateTaskID(task: currentTask)
-        } else {
-            self.tasks.todos.insert(task, at: 0)
-            // здесь обновлять базу данных
-            self.presenter?.presentFilledTasks(tasks: tasks)
-            
+    func addNewTask(task: TodoRequest) {
+        networkManager.addNewTask(task: task) { [weak self] result in
+            guard let self = self else {
+                return
+            }
+                switch result {
+                case .success(let task):
+                    self.tasks.todos.insert(task, at: 0)
+                    self.presenter?.presentFilledTasks(tasks: self.tasks)
+                    // обновить базу
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+        }
+        //        var currentTask = task
+        //        if tasks.todos.contains(where: { currentTask.id == $0.id }) {
+        //            currentTask.id = Int.random(in: 0...10000)
+        //            addNewTask(task: currentTask)
+        //        } else {
+        //            self.tasks.todos.insert(task, at: 0)
+        // здесь обновлять базу данных
+        //            self.presenter?.presentFilledTasks(tasks: tasks)
+//        }
+    }
+    
+    // MARK: - мотод для удаления
+    
+    func deleteTask() {
+        networkManager.deleteTask() { [weak self] result in
+            guard let self = self else {
+                return
+            }
+            switch result {
+            case .success(let task):
+                print(task)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
         }
     }
     

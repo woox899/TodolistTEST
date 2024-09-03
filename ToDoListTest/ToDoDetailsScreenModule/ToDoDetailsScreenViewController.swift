@@ -19,6 +19,8 @@ final class ToDoDetailsViewController: UIViewController, ToDoDetailsScreenViewCo
     
     private var todo: Todo?
     
+    private var todoRequest: TodoRequest?
+    
     private let taskNameLabel: UILabel = {
         let taskNameLabel = UILabel()
         taskNameLabel.text = "Task name"
@@ -55,7 +57,7 @@ final class ToDoDetailsViewController: UIViewController, ToDoDetailsScreenViewCo
         saveChangesButton.setTitle("Save changes", for: .normal)
         saveChangesButton.setTitleColor(.black, for: .normal)
         saveChangesButton.backgroundColor = UIColor(red: 248/255, green: 204/255, blue: 114/255, alpha: 1)
-        saveChangesButton.addTarget(self, action: #selector(saveTaskChanges), for: .touchUpInside) // метод будет добавлять в массив модель на первое место
+        saveChangesButton.addTarget(self, action: #selector(saveTaskChanges), for: .touchUpInside) 
         return saveChangesButton
     }()
     
@@ -67,23 +69,27 @@ final class ToDoDetailsViewController: UIViewController, ToDoDetailsScreenViewCo
     }
     
     func displayTaskDetails(task: TodoDetailsScreenEntity.TodoDetailsTaskModel) {
-        self.todo = task.todo // ---???
+        self.todo = task.todo
         taskNameTextView.text = task.todo.todo
-        taskDescriptionTextView.text = task.todo.description ?? "empty text"
+        taskDescriptionTextView.text = "empty text"
     }
     
     func displayNewTask() {
-        self.todo = Todo(id: Int.random(in: 0...100000), todo: "new task", completed: false) // ставлю random так как нет синка с бэком, дальше id может измениться, если в массиве уже будет существовать
-        taskNameTextView.text = todo?.todo
-        taskDescriptionTextView.text = todo?.description ?? "empty text"
+        self.todoRequest = TodoRequest(todo: "new task", completed: false, userId: Constants.userId)
+        taskNameTextView.text = todoRequest?.todo
+        taskDescriptionTextView.text = "empty text"
         
     }
     
     @objc private func saveTaskChanges() {
-        guard let todo = todo else {
-            return
+        if let todo = self.todo {
+            presenter?.saveNewTaskChanges(task: todo)
+            // здесь метод сохранения таски дергать
         }
-        presenter?.saveNewTaskChanges(task: todo)
+        
+        if let todoRequest = self.todoRequest {
+            presenter?.addNewTask(task: todoRequest)
+        }
     }
     
     private func setupUI() {
@@ -130,10 +136,6 @@ extension ToDoDetailsViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         if textView == taskNameTextView {
             todo?.todo = textView.text
-        }
-        
-        if textView == taskDescriptionTextView {
-            todo?.description = textView.text
         }
     }
 }

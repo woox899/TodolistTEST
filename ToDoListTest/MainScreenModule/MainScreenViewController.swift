@@ -8,14 +8,15 @@
 import UIKit
 
 protocol MainScreenViewControllerProtocol: AnyObject {
-    func displayFilledTasks(tasks: MainScreenEntity.MainScreenTodoList) // показать заполненные таски
+    func displayFilledTasks(tasks: MainScreenEntity.MainScreenTodoList)
+    func deleteTask()
 }
 
 final class MainScreenViewController: UIViewController, MainScreenViewControllerProtocol {
 
-    var presenter: MainScreenPresenterProtocol? // ссылка на презентер
+    var presenter: MainScreenPresenterProtocol?
     
-    var tasksArray = TodoListModel(todos: []) // датасорс таблицы
+    var tasksArray = TodoListModel(todos: [])
 
     private lazy var mainTableView: UITableView = {
         let mainTableView = UITableView(frame: view.bounds, style: .plain)
@@ -30,12 +31,12 @@ final class MainScreenViewController: UIViewController, MainScreenViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        presenter?.viewDidLoaded() // контроллер сообщает презентеру что он загрузился
+        presenter?.viewDidLoaded()
     }
 
-    func displayFilledTasks(tasks: MainScreenEntity.MainScreenTodoList) { // метод где запоняется массив
-        tasksArray = tasks.list // заполнение массива
-        mainTableView.reloadData() // обновление таблицы
+    func displayFilledTasks(tasks: MainScreenEntity.MainScreenTodoList) {
+        tasksArray = tasks.list
+        mainTableView.reloadData()
     }
     
     private func setupUI() {
@@ -49,6 +50,10 @@ final class MainScreenViewController: UIViewController, MainScreenViewController
 
     @objc func addNewTask() {
         presenter?.didTapCreateNewTaskButton() 
+    }
+    
+    func deleteTask() {
+        presenter?.deleteTask()
     }
 }
 
@@ -92,8 +97,11 @@ extension MainScreenViewController: UITableViewDelegate {
         if editingStyle == .delete {
             tableView.beginUpdates()
             tasksArray.todos.remove(at: indexPath.row)
+            deleteTask()
             tableView.deleteRows(at: [indexPath], with: .fade)
             tableView.endUpdates()
+            //MARK: - нужно ли релоадить дату таблицы ?
+            tableView.reloadData()
         }
     }
 }

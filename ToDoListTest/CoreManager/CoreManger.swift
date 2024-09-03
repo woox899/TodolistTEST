@@ -11,10 +11,10 @@ import CoreData
 class CoreManger {
     static let shared = CoreManger()
     
-    let tasks = [Tasks]()
+    var tasks = [Tasks]()
     
     init() {
-        
+        fetchAllTasks() // - пока что здесь
     }
     
     // MARK: - Core Data stack
@@ -37,7 +37,6 @@ class CoreManger {
             do {
                 try context.save()
             } catch {
-
                 let nserror = error as NSError
                 fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
             }
@@ -45,6 +44,20 @@ class CoreManger {
     }
     
     func fetchAllTasks() {
+        let req = Tasks.fetchRequest()
+        if let tasks = try? persistentContainer.viewContext.fetch(req) {
+            self.tasks = tasks
+        }
+    }
+    
+    func addNewTask(id: Int16, taskName: String, taskDescription: String, status: Bool, date: Date) {
+        let task = Tasks(context: persistentContainer.viewContext)
+        task.taskName = taskName
+        task.taskDescription = taskDescription
+        task.status = status
+        task.id = id
         
+        saveContext()
+        fetchAllTasks()
     }
 }

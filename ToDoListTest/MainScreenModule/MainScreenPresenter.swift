@@ -14,6 +14,7 @@ protocol MainScreenPresenterProtocol: AnyObject {
     func didTapRow(task: Todo)
     func didTapCreateNewTaskButton()
     func taskCompletedValueChanged(task: Todo)
+    func deleteTask()
 }
 
 class MainScreenPresenter: MainScreenPresenterProtocol {
@@ -38,12 +39,16 @@ class MainScreenPresenter: MainScreenPresenterProtocol {
 
     func didTapCreateNewTaskButton() {
         router.openCreateNewTaskScreen() { [weak self] task in
-            self?.interactor.validateTaskID(task: task)
+            self?.interactor.addNewTask(task: task)
         }
     }
     
     func taskCompletedValueChanged(task: Todo) {
         self.interactor.updateTaskCompletion(task: task)
+    }
+    
+    func deleteTask() {
+        interactor.deleteTask()
     }
 
     init(interactor: MainScreenInteractorProtocol, router: MainScreenRouterProtocol) {

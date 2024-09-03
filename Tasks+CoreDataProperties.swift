@@ -9,6 +9,10 @@
 import Foundation
 import CoreData
 
+@objc(Tasks)
+public class Tasks: NSManagedObject {
+    
+}
 
 extension Tasks {
 
@@ -20,10 +24,23 @@ extension Tasks {
     @NSManaged public var taskDescription: String?
     @NSManaged public var dateCreation: Date?
     @NSManaged public var status: Bool
-    @NSManaged public var id: String?
+    @NSManaged public var id: Int16
 
 }
 
 extension Tasks : Identifiable {
+    
+    func updateTasks(newTaskName: String, newTaskDescription: String) {
+        self.taskName = newTaskName
+        self.taskDescription = newTaskDescription
+        self.dateCreation = Date()
+        
+        try? managedObjectContext?.save()
+    }
+    
+    func deliteTask() {
+        managedObjectContext?.delete(self)
+        try? managedObjectContext?.save()
+    }
 
 }

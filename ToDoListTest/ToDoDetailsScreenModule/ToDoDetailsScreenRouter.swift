@@ -10,10 +10,12 @@ import UIKit
 protocol ToDoDetailsScreenRouterProtocol: AnyObject {
     var routes: ((ToDoDetailsScreenViewBuilderRoutes) -> Void)? { get set }
     func saveTaskChanges(task: Todo)
+    func addNewTask(task: TodoRequest)
 }
 
 enum ToDoDetailsScreenViewBuilderRoutes {
     case saveTaskChanges(Todo)
+    case addTask(TodoRequest)
 }
 
 class ToDoDetailsScreenRouter: ToDoDetailsScreenRouterProtocol {
@@ -24,5 +26,9 @@ class ToDoDetailsScreenRouter: ToDoDetailsScreenRouterProtocol {
     
     func saveTaskChanges(task: Todo) {
         routes?(.saveTaskChanges(task))
+    }
+
+    func addNewTask(task: TodoRequest) {
+        routes?(.addTask(task))
     }
 }
